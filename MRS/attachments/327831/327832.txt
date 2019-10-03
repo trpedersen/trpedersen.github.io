@@ -1,0 +1,41 @@
+Creating a database is fairly straightforward;
+
+Run the highlighted text in your console window
+
+# Remote desktop to pemsdb
+# Open a command window
+# Set the default database to mrs
+{code:none}
+set ORACLE_SID=MRS
+{code}
+# Export someone elses database (richard dazeley's shown here)
+{code:none}
+exp oraadmin/oraadmin owner=<exising user to copy>
+{code}
+# Run sqlplus (oracle commandline interface), as a privileged user
+{code:none}
+sqlplus / as sysdba
+{code}
+# Create a user for yourself (password is same as username)
+{code:none}
+create user _username_ identified by _username_
+{code}
+# Allow new user some capabilities
+{code:none}
+grant connect, resource, dba to _username_
+{code}
+# Exit sql plus
+{code:none}
+exit
+{code}
+# Import the (exported) database into your schema
+{code:none}
+imp _username_/_username_ fromuser=<user who was exported> touser=_username_
+{code}
+# Revoke dba from yourself
+{code:none}
+sqlplus / as sysdba
+revoke dba from _username_
+exit
+{code}
+# You are now done. Don't forget to log off from pemsdb

@@ -1,0 +1,1059 @@
+<HTML>
+
+<HEAD>
+	<TITLE>JUnit Primer</TITLE>
+	<LINK rel="stylesheet" type="text/css" href="../stylesheet.css" title="Style">
+	<META NAME="keywords" content="JUnit, Java test cases">
+	<META NAME="description" content="JUnit Primer">
+	<META NAME="Author" content="Mike Clark">
+</HEAD>
+
+<BODY>
+
+<!--
+
+	Title
+
+-->
+
+<TABLE width="100%" cellspacing="0" cellpadding="0" >
+	<TR>
+		<TD class="PageTitle">
+			JUnit Primer
+		</TD>
+	</TR>
+</TABLE>
+
+<!--
+
+	Summary
+
+-->
+<P>
+<DIV align="center">
+<TABLE class="Primary" width="90%" cellspacing="0" cellpadding="1" border="0">
+	<TR>
+		<TD class="Primary">
+			<FONT class="Reverse">
+				<B>&nbsp;Summary</B>
+			</FONT>
+		</TD>
+	</TR>
+	<TR>
+		<TD class="Primary">
+			<TABLE class="Secondary" width="100%" cellspacing="0" cellpadding="3" border="0">
+				<TR>
+					<TD class="Secondary">
+This article demonstrates how to write and run simple test cases and
+test suites using the <A href="http://www.junit.org/" target="_blank">JUnit</A> 
+testing framework.  This article also demonstrates how to use the 
+JUnit Load Testing Extensions to write and run performance and scalability tests.
+					</TD>
+				</TR>
+			</TABLE>
+		</TD>
+	</TR>
+	<TR>
+		<TD>
+			<BR>
+				<a href="mailto:mike@clarkware.com">Mike Clark</a><BR>
+				<a href="http://www.clarkware.com" target="_blank">Clarkware Consulting, Inc.</a><BR>
+				October 7, 2000
+		</TD>
+	</TR>
+</TABLE>
+</DIV>
+</P>
+
+<BR>
+
+<!--
+
+	Introduction
+
+-->
+<P>
+<A name="intro"></A> 
+<TABLE class="Primary" width="100%" border="0" cellspacing="0" cellpadding="0">
+	<TR><TD class="Border">&nbsp;</TD></TR>
+	<TR> 
+		<TD class="SubHeader">&nbsp;
+			Introduction
+		</TD>
+	</TR>
+</TABLE>
+</P>
+<P>
+The goal of this article is to demonstrate a quick and easy way to
+write and run JUnit test cases and test suites.  We'll start by
+reviewing the benefits of using JUnit and then write some example
+Java code to demonstrate its effectiveness.
+</P>
+<P>
+This article contains the following sections:
+</P>
+<P>
+<UL>
+	<LI><A href="#intro">Introduction</A>
+	<LI><A href="#usage">Why Use JUnit?</A>
+	<LI><A href="#design">Design Of JUnit</A>
+	<LI><A href="#testcase">Step 1: Write A Test Case</A>
+	<LI><A href="#testsuite">Step 2: Write A Test Suite</A>
+	<LI><A href="#run">Step 3: Run The Tests</A>
+	<LI><A href="#organize">Step 4: Organize The Tests</A>
+	<LI><A href="#idioms">Testing Idioms</A>
+	<LI><A href="#performance">Load Testing Extensions</A>
+	<LI><A href="#support">Support</A>
+	<LI><A href="#resources">Resources</A>
+</UL>
+</P>
+<P>
+Before you start, make sure you have downloaded and installed the 
+following software:
+</P>
+<P>
+<UL>
+	<LI><A href="http://www.xprogramming.com/ftp/TestingFramework/JUnit/junit32.zip">
+			JUnit (3.1 or later)</A>
+	<LI><A href="http://www.clarkware.com/software/junitload.zip">
+			JUnit Load Testing Extensions</A>
+</UL>
+</P>
+<br>
+
+
+<!--
+
+	Why Use JUnit?
+
+-->
+<P>
+<A name="usage"></A> 
+<TABLE class="Primary" width="100%" border="0" cellspacing="0" cellpadding="0">
+	<TR><TD class="Border">&nbsp;</TD></TR>
+	<TR> 
+		<TD class="SubHeader">&nbsp;
+			Why Use JUnit?
+		</TD>
+	</TR>
+</TABLE>
+</P>
+<P>
+Before we begin, it's worth asking why we should use JUnit at all.  The 
+subject of unit testing always conjures up visions of long nights slaving 
+over a hot keyboard trying to meet the project's test case quota.  However, 
+unlike the draconian style of conventional unit testing, using JUnit actually 
+helps you write code faster while increasing code quality by creating synergy 
+between coding and testing.
+<P>  
+Here are just a few reasons for using JUnit:
+</P>
+<P>
+<UL>
+	<LI><b>JUnit tests allow you to write code faster while increasing quality.</b>
+</UL>
+<UL>
+<P>
+Yeah, I know, it sounds counter-intuitive -- but it's true!  When you write 
+tests using JUnit, you'll spend less time debugging, and you'll have confidence
+that changes to your code actually work.  Without tests, it's easy to become
+paranoid about refactoring or changing code because you don't know what
+might break as a result.  By writing tests, you can quickly run the tests 
+after changing the code and gain confidence that your changes didn't break 
+anything.  If a bug is detected while running tests, the source code is 
+fresh in your mind, so the bug is easily found.  Tests written in JUnit help 
+you write code at an extreme pace and spot defects quickly.
+</UL>
+<UL>
+	<LI><b>JUnit is elegantly simple.</b>
+</UL>
+<UL>
+<P>
+Writing tests should be simple - that's the point!  If writing tests is too 
+complex or takes too much time, then there's no incentive to start writing
+tests in the first place.  With JUnit, you can quickly write tests that 
+exercise your components.  Once you've written some tests, you want to run 
+them quickly and frequently without disrupting the creative design and 
+development process.  With JUnit, running tests is as easy and fast
+as running a compiler on your code.  In fact, you should run your tests 
+every time you run the compiler.  The compiler tests the syntax of the
+code and the tests validate the integrity of the code.
+</UL>
+<UL>
+	<LI><b>JUnit tests check their own results and provide immediate feedback.</b>
+</UL>
+<UL>
+<P>
+Testing is no fun if you have to manually compare the expected and
+actual outcome of tests, and it slows you down.  JUnit tests can be
+run automatically and they check their own results.  When you run
+tests, you get simple and immediate visual feedback as to whether the 
+tests passed or failed.  There's no need to comb through a report of 
+test results.
+</UL>
+<UL>
+	<LI><b>JUnit tests can be composed into a hierarchy of test suites.</b>
+</UL>
+<UL>
+<P>
+JUnit tests can be logically grouped into test suites containing test cases
+and other test suites.  The composite behavior of JUnit tests allows you to
+assemble collections of tests and automatically regression test the entire
+test suite in one fell swoop.  You can also run the tests any logical level 
+within the test suite hierarchy.
+</UL>
+<UL>
+	<LI><b>Writing JUnit tests is inexpensive.</b>
+</UL>
+<UL>
+<P>
+Using the JUnit testing framework, you can write tests and enjoy the
+convenience of the testing harness supported by the framework.  Writing
+a test is as simple as writing a method which exercises the code to be
+tested and defining the expected result.  The framework provides the
+environment in which the test can be run automatically and as part of a
+collection of other tests.
+</UL>
+<UL>
+	<LI><b>JUnit tests increase the stability of software.</b>
+</UL>
+<UL>
+<P>
+The fewer tests you write, the less stable your code becomes.  Tests 
+validate the stability of the software and instill confidence that
+changes haven't caused a ripple-effect through the software.  The
+tests form the glue of the structural integrity of the software.
+</UL>
+<UL>
+	<LI><b>JUnit tests are developer tests.</b>
+</UL>
+<UL>
+<P>
+JUnit tests are highly localized tests written to improve a developer's
+productivity and code quality.  Unlike functional tests, which treat
+the system as a black box and ensure that the software works as a whole,
+unit tests are written to test the fundamental building blocks of the system
+from the inside out.  Developer's write and own the JUnit tests.
+When a development iteration is complete, the tests are promoted as part
+and parcel of the delivered component as a way of communicating, 
+"Here's my deliverable and the tests which verify it."
+</UL>
+<UL>
+	<LI><b>JUnit tests are written in Java.</b>
+</UL>
+<UL>
+<P>
+Testing Java software using Java tests forms a seamless bond between
+the test and the code under test.  The tests become an extension to
+the overall software.  The Java compiler helps the testing process
+by performing static syntax checking of the unit tests and ensuring that
+the software interface contracts are being obeyed.
+</UL>
+<UL>
+	<LI><b>JUnit is free.</b>
+</UL>
+<br>
+
+<!--
+
+	Design Of JUnit
+
+-->
+<P>
+<A name="design"></A> 
+<TABLE class="Primary" width="100%" border="0" cellspacing="0" cellpadding="0">
+	<TR><TD class="Border">&nbsp;</TD></TR>
+	<TR> 
+		<TD class="SubHeader">&nbsp;
+			Design Of JUnit
+		</TD>
+	</TR>
+</TABLE>
+</P>
+<P>
+JUnit is designed around two key design patterns: the <I>Command</I> pattern
+and the <I>Composite</I> pattern.
+<P>
+A <CODE>TestCase</CODE> is a command object.  Any class that contains 
+test methods should subclass the <CODE>TestCase</CODE> class.  A 
+<CODE>TestCase</CODE> can define any number of <CODE>testXXX()</CODE> 
+methods.  When you want to check the expected and actual test results, 
+you invoke any variation of the <CODE>assert()</CODE> convenience method 
+and pass a <CODE>boolean</CODE> expression that returns <CODE>true</CODE> 
+to indicate the assertion is true.  <CODE>TestCase</CODE> subclasses
+that contain multiple <CODE>testXXX()</CODE> methods can use the 
+<CODE>setUp()</CODE> and <CODE>tearDown()</CODE> convenience methods to 
+initialize and release any common objects under test.  
+<P>
+<CODE>TestCase</CODE> instances can be composed into <CODE>TestSuite</CODE> 
+hierarchies that automatically invoke all the <CODE>testXXX()</CODE> methods 
+defined in each <CODE>TestCase</CODE> instance.  A <CODE>TestSuite</CODE> is 
+a composite of other tests, either <CODE>TestCase</CODE> instances or other 
+<CODE>TestSuite</CODE> instances.  <CODE>TestSuite</CODE> instances and 
+<CODE>TestCase</CODE> instances can be added to a <CODE>TestSuite</CODE>
+using the <CODE>addTest()</CODE> convenience method.  The composite behavior
+exhibited by the <code>TestSuite</code> allows you to assemble test suites 
+of test suites of tests, to an arbitrary depth, and run all the tests 
+automatically and uniformly to yield a single pass or fail status.
+</P>
+<br>
+
+
+<!--
+
+	Write A Test Case
+
+-->
+<P>
+<A name="testcase"></A> 
+<TABLE class="Primary" width="100%" border="0" cellspacing="0" cellpadding="0">
+	<TR><TD class="Border">&nbsp;</TD></TR>
+	<TR> 
+		<TD class="SubHeader">&nbsp;
+			Step 1: Write A Test Case
+		</TD>
+	</TR>
+</TABLE>
+</P>
+<P>
+First, we'll write a test case to exercise a single software component.  
+We'll focus on writing tests that exercise the component behavior that 
+has the highest potential for breakage, thereby maximizing our return 
+on testing investment.
+<P>
+To write a test case, follow these steps: 
+<OL>
+	<LI>Define a subclass of <CODE>TestCase</CODE>.
+	<LI>Override the <CODE>setUp()</CODE> method to initialize object(s) under test.
+	<LI>Override the <CODE>tearDown()</CODE> method to release object(s) under test.
+	<LI>Define one or more <CODE>testXXX()</CODE> methods that exercise the object(s) under test.
+	<LI>Define a <CODE>suite()</CODE> factory method that creates a <CODE>TestSuite</CODE> 
+	    containing all the <CODE>testXXX()</CODE> methods of the <CODE>TestCase</CODE>.
+	<LI>Define a <CODE>main()</CODE> method that runs the <CODE>TestCase</CODE>.
+</OL>
+</P>
+<P>
+The following is an example test case:
+<P>
+<i>(The complete source code for this example is available in the <a href="#resources">Resources</a> section).</i>
+<P>
+<BLOCKQUOTE>
+<PRE>
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+
+public class ShoppingCartTest extends TestCase {
+
+    private ShoppingCart _bookCart;
+
+    /**
+     * Constructs a ShoppingCartTest with the specified name.
+     *
+     * @param name Test case name.
+     */
+    public ShoppingCartTest(String name) {
+        super(name);
+    }
+
+    /**
+     * Sets up the text fixture.
+     *
+     * Called before every test case method.
+     */
+    protected void setUp() {
+        _bookCart = new ShoppingCart();
+
+        Product book = new Product("Extreme Programming", 23.95);
+        _bookCart.addItem(book);
+    }
+
+    /**
+     * Tears down the text fixture.
+     *
+     * Called after every test case method.
+     */
+    protected void tearDown() {
+        _bookCart = null;
+    }
+
+    /**
+     * Tests the emptying of the cart.
+     */
+    public void testEmpty() {
+        _bookCart.empty();
+        assert(_bookCart.isEmpty());
+    }
+
+    /**
+     * Tests adding a product to the cart.
+     */
+    public void testProductAdd() {
+
+        Product book = new Product("Refactoring", 53.95);
+        _bookCart.addItem(book);
+
+        double expectedBalance = 23.95 + book.getPrice();
+        double currentBalance = _bookCart.getBalance();
+        double tolerance = 0.0;
+
+        assertEquals(expectedBalance, currentBalance, tolerance);
+
+        int expectedItemCount = 2;
+        int currentItemCount = _bookCart.getItemCount();
+
+        assertEquals(expectedItemCount, currentItemCount);
+    }
+
+    /**
+     * Tests removing a product from the cart.
+     *
+     * @throws ProductNotFoundException If the product was not in the cart.
+     */
+    public void testProductRemove() throws ProductNotFoundException {
+
+        Product book = new Product("Extreme Programming", 23.95);
+        _bookCart.removeItem(book);
+
+        double expectedBalance = 23.95 - book.getPrice();
+        double currentBalance = _bookCart.getBalance();
+        double tolerance = 0.0;
+
+        assertEquals(expectedBalance, currentBalance, tolerance);
+
+        int expectedItemCount = 0;
+        int currentItemCount = _bookCart.getItemCount();
+
+        assertEquals(expectedItemCount, currentItemCount);
+    }
+
+    /**
+     * Tests removing an unknown product from the cart.
+     *
+     * This test is successful if the 
+     * ProductNotFoundException is raised.
+     */
+    public void testProductNotFound() {
+
+        try {
+            Product book = new Product("Ender's Game", 4.95);
+            _bookCart.removeItem(book);
+
+            fail("Should raise a ProductNotFoundException");
+
+        } catch(ProductNotFoundException pnfe) {
+            // successful test
+        }
+    }
+
+    /**
+     * Assembles and returns a test suite for
+     * all the test methods of this test case.
+     *
+     * @return A non-null test suite.
+     */
+    public static Test suite() {
+
+        //
+        // Reflection is used here to add all
+        // the testXXX() methods to the suite.
+        //
+        TestSuite suite = new TestSuite(ShoppingCartTest.class);
+
+        //
+        // Alternatively, but prone to error when adding more
+        // test case methods...
+        //
+        // TestSuite suite = new TestSuite();
+        // suite.addTest(new ShoppingCartTest("testEmpty"));
+        // suite.addTest(new ShoppingCartTest("testProductAdd"));
+        // suite.addTest(new ShoppingCartTest("testProductRemove"));
+        // suite.addTest(new ShoppingCartTest("testProductNotFound"));
+        //
+
+        return suite;
+    }
+
+    /**
+     * Runs the test case.
+     *
+     * Uncomment either the textual UI, Swing UI, or AWT UI.
+     */
+    public static void main(String args[]) {
+        String[] testCaseName = {ShoppingCartTest.class.getName()};
+        //junit.textui.TestRunner.main(testCaseName);
+        //junit.swingui.TestRunner.main(testCaseName);
+        junit.ui.TestRunner.main(testCaseName);
+    }
+}
+</PRE>
+</BLOCKQUOTE>
+<br>
+
+
+<!--
+
+	Write A Test Suite
+
+-->
+<P>
+<A name="testsuite"></A> 
+<TABLE class="Primary" width="100%" border="0" cellspacing="0" cellpadding="0">
+	<TR><TD class="Border">&nbsp;</TD></TR>
+	<TR> 
+		<TD class="SubHeader">&nbsp;
+			Step 2: Write A Test Suite
+		</TD>
+	</TR>
+</TABLE>
+</P>
+<P>
+Next, we'll write a test suite that includes several test cases.
+The test suite will allow us to run all of its test cases in one
+fell swoop.
+<P>
+To write a test suite, follow these steps: 
+<OL>
+	<LI>Define a subclass of <CODE>TestCase</CODE>.
+	<LI>Define a <CODE>suite()</CODE> factory method that creates a <CODE>TestSuite</CODE> 
+	    containing all the <CODE>TestCase</CODE> instances and <CODE>TestSuite</CODE> 
+	    instances contained in the <CODE>TestSuite</CODE>.
+	<LI>Define a <CODE>main()</CODE> method that runs the <CODE>TestSuite</CODE>.
+</OL>
+</P>
+<P>
+The following is an example test suite:
+<P>
+<BLOCKQUOTE>
+<PRE>
+public class EcommerceTestSuite extends TestCase {
+	
+    /**
+     * Constructs a EcommerceTestSuite with the specified name.
+     *
+     * @param name Test suite name.
+     */
+    public EcommerceTestSuite(String name) {
+        super(name);
+    }
+
+    /**
+     * Assembles and returns a test suite
+     * containing all known tests.
+     *
+     * New tests should be added here!
+     *
+     * @return A non-null test suite.
+     */
+    public static Test suite() {
+
+        TestSuite suite = new TestSuite();
+	
+        //
+        // The ShoppingCartTest we created above.
+        //
+        suite.addTest(ShoppingCartTest.suite());
+
+        //
+        // Another example test suite of tests.
+        // 
+        suite.addTest(CreditCartTestSuite().suite());
+
+        return suite;
+    }
+
+    /**
+     * Runs the test suite.
+     *
+     * Uncomment either the textual UI, Swing UI, or AWT UI.
+     */
+    public static void main(String args[]) {
+        String[] testCaseName = {EcommerceTestSuite.class.getName()};
+        //junit.textui.TestRunner.main(testCaseName);
+        //junit.swingui.TestRunner.main(testCaseName);
+        junit.ui.TestRunner.main(testCaseName);
+    }
+}
+</PRE>
+</BLOCKQUOTE>
+<br>
+
+
+<!--
+
+	Run The Tests
+
+-->
+<P>
+<A name="run"></A> 
+<TABLE class="Primary" width="100%" border="0" cellspacing="0" cellpadding="0">
+	<TR><TD class="Border">&nbsp;</TD></TR>
+	<TR> 
+		<TD class="SubHeader">&nbsp;
+			Step 3: Run The Tests	
+		</TD>
+	</TR>
+</TABLE>
+</P>
+<P>
+Now that we've written a test suite containing a collection of test cases and
+other test suites, we can run either the test suite or any of its test cases
+individually.  Running a <CODE>TestSuite</CODE> will automatically run all of 
+its subordinate <CODE>TestCase</CODE> instances and <CODE>TestSuite</CODE> 
+instances.  Running a <CODE>TestCase</CODE> will automatically invoke all of 
+its defined <CODE>testXXX()</CODE> methods. 
+<P>
+JUnit provides both a graphical and a textual user interface.  Both
+user interfaces indicate how many tests were run, any errors or failures,
+and a simple completion status.  The graphical user interface displays either 
+an AWT-based (<CODE>junit.ui.TestRunner</CODE>) or Swing-based 
+(<CODE>junit.swingui.TestRunner)</CODE> window that displays a green progress 
+bar if all the tests passed or a red progress bar if any of the tests failed.  
+The textual user interface (<CODE>junit.textui.TestRunner</CODE>) displays 
+"OK" if all the tests passed and failure messages if any of the tests failed.
+<P>
+In general, <CODE>TestSuite</CODE> and <CODE>TestCase</CODE> classes should 
+define a <CODE>main()</CODE> method which employs the appropriate user 
+interface.  The tests we've written so far have defined a <CODE>main()</CODE> 
+using the AWT-based user interface.
+<P>
+To run our test case, use:
+<BLOCKQUOTE>
+<PRE>
+java ShoppingCartTest
+</PRE>
+</BLOCKQUOTE>
+<P>
+To run our test suite, and all of its tests, use:
+<BLOCKQUOTE>
+<PRE>
+java EcommerceTestSuite
+</PRE>
+</BLOCKQUOTE>
+<P>
+The simplicity of the user interfaces is the key to running tests quickly.
+You should be able to run your tests and know the test status with a glance,
+much like you do with a compiler.
+</P>
+<br>
+
+
+<!--
+
+	Organize The Tests
+
+-->
+<P>
+<A name="organize"></A> 
+<TABLE class="Primary" width="100%" border="0" cellspacing="0" cellpadding="0">
+	<TR><TD class="Border">&nbsp;</TD></TR>
+	<TR> 
+		<TD class="SubHeader">&nbsp;
+			Step 4: Organize The Tests
+		</TD>
+	</TR>
+</TABLE>
+</P>
+<P>
+The last step is to decide where the tests will live within our
+development environment.
+<P>
+Here's the recommended way to organize tests:
+<OL>
+	<LI>Create test cases in the same package as the code under test.
+	    For example, the <CODE>com.mydotcom.ecommerce</CODE> package 
+		would contain all the application-level classes as well as the 
+		test cases for those components.  If you want to avoid combining
+		application and testing code in your source directories, it's 
+		recommended to create a parallel, mirrored directory structure 
+		that contains the test code.
+
+	<LI>For each Java package in your application, define a 
+		<CODE>TestSuite</CODE> class that contains all the 
+		tests for verifying the code in the package.
+
+	<LI>Define similar <CODE>TestSuite</CODE> classes that create higher-level 
+		and lower-level test suites in the other packages (and sub-packages) of 
+	    the application.
+
+	<LI>Make sure your build process includes the compilation of all 
+		test suites and test cases.  This helps to ensure that your
+		tests are always up-to-date with the latest code and keeps
+		the tests fresh.
+</OL>
+<P>
+By creating a <CODE>TestSuite</CODE> in each Java package, at various levels 
+of packaging, you can run a <CODE>TestSuite</CODE> at any level of abstraction.
+For example, you can define a <CODE>com.mydotcom.MasterTestSuite</CODE> 
+that runs all the tests in the system and a 
+<CODE>com.mydotcom.ecommerce.EcommerceTestSuite</CODE> that runs only those 
+tests validating the e-commerce components.
+<P>
+The testing hierarchy can extend to an arbitrary depth.  Depending on the 
+level of abstraction you're developing at in the system, you can run an 
+appropriate test.  Just pick a level of abstraction in the system and test it!  
+<P>
+Here's an example testing hierarchy:
+<P>
+<UL>
+	<LI><CODE>MasterTestSuite</CODE> - The top-level test suite
+	<UL>
+		<LI><CODE>SmokeTestSuite</CODE> - Structural integrity tests
+			<UL>
+				<LI><CODE>EcommerceTestSuite</CODE>
+					<UL>
+						<LI><CODE>ShoppingCartTestCase</CODE>
+						<LI><CODE>CreditCartTestSuite</CODE>
+							<UL>
+								<LI><CODE>AuthorizationTestCase</CODE>
+								<LI><CODE>CaptureTestCase</CODE>
+								<LI><CODE>VoidTestCase</CODE>
+							</UL>
+						<LI><CODE>UtilityTestSuite</CODE>
+							<UL>
+								<LI><CODE>MoneyTestCase</CODE>
+							</UL>
+					</UL>
+				<LI><CODE>DatabaseTestSuite</CODE>
+					<UL>
+						<LI><CODE>ConnectionTestCase</CODE>
+						<LI><CODE>TransactionTestCase</CODE>
+					</UL>
+			</UL>
+		<LI><CODE>LoadTestSuite</CODE> - Scalability tests
+			<UL>
+				<LI><CODE>DatabaseTestSuite</CODE>
+					<UL>
+						<LI><CODE>ConnectionPoolTestCase</CODE>
+					</UL>
+				<LI><CODE>ThreadPoolTestCase</CODE>
+			</UL>
+	</UL>
+</UL>
+<br>
+
+
+<!--
+
+	Idioms
+
+-->
+<P>
+<A name="idioms"></A> 
+<TABLE class="Primary" width="100%" border="0" cellspacing="0" cellpadding="0">
+	<TR><TD class="Border">&nbsp;</TD></TR>
+	<TR> 
+		<TD class="SubHeader">&nbsp;
+			Testing Idioms
+		</TD>
+	</TR>
+</TABLE>
+</P>
+<P>
+Keep these things in mind when testing:
+<UL>
+	<LI>Code a little, test a little, code a little, test a little...
+	<LI>Run your tests as often as possible, at least as often as you run the compiler.
+	<LI>Run all the tests in the system at least once per day (or night).
+	<LI>Begin by writing tests for the areas of code that you're most worried about breaking.
+	<LI>Write tests that have the highest possible return on your testing investment.
+	<LI>When you need to add new functionality to the system, write the tests first.
+	<LI>If you find yourself debugging using <CODE>System.out.println()</CODE>, 
+	    write a test case instead.
+	<LI>When a bug is reported, write a test case to expose the bug.
+	<LI>The next time someone asks you for help debugging, help them write a test.
+	<LI>Don't deliver software that doesn't pass all of its tests.
+</UL>
+<br>
+
+
+<!--
+
+	Load Testing Extensions
+
+-->
+<P>
+<A name="performance"></A> 
+<TABLE class="Primary" width="100%" border="0" cellspacing="0" cellpadding="0">
+	<TR><TD class="Border">&nbsp;</TD></TR>
+	<TR> 
+		<TD class="SubHeader">&nbsp;
+			Load Testing Extensions
+		</TD>
+	</TR>
+</TABLE>
+</P>
+<P>
+The JUnit Load Testing Extensions were developed as extensions to
+the JUnit framework for the purpose of assemblying and executing performance
+and scalability tests.
+<P>
+<B><U>BaseTestCase</U></B>
+<P>
+A base class for test cases which includes some convenience methods
+for executing test cases.
+<P>
+Any BaseTestCase, or TestSuite which extends the BaseTestCase, can be
+run as follows:
+<P>
+<BLOCKQUOTE>
+<PRE>
+java &lt;TestName&gt;   // Graphical UI
+
+java &lt;TestName&gt; -text   // Text UI
+</PRE>
+</BLOCKQUOTE>
+<P>
+<B><U>TimedTest</U></B>
+<P>
+A TestCase decorator that runs the decorated TestCase and displays the
+begin, end, and elapsed time in milliseconds. Each instance of a TimedTest
+has a specified maximum elapsed time, and if the max time is exceeded,
+then the test case fails.
+<P>
+The following is an example of how to construct a TimedTest:
+<BLOCKQUOTE>
+<PRE>
+//
+// Creates a timed test of the testSomething() method
+// with a max elapsed time of 2 seconds.
+//
+Test t = new MyTestCase("testSomething");
+Test timedTest = new TimedTest(t, t.getName(), 2000);
+</PRE>
+</BLOCKQUOTE>
+<P>
+<B><U>Timer</U></B>
+<P>
+An interface which defines the methods that must be implemented by pluggable
+timers. The <CODE>ConstantTimer</CODE> has a constant delay, and the 
+<CODE>RandomTimer</CODE> has a random delay with a uniformly distributed variation.
+<P>
+<B><U>LoadTestCase</U></B>
+<P>
+A TestCase which has a specified number of maximum users and an elapsed
+time. This class provides a <CODE>makeLoadTest()</CODE> factory method which 
+decorates the LoadTestCase as a timed and threaded test. Once a LoadTestCase has
+been decorated in this fashion, all the methods registered in the suite
+will be run as an atomic unit concurrently with the specified maximum number
+of simulated users. If the elapsed time is exceeded, then the test case
+fails.
+<P>
+<B><U>ExampleLoadTest</U></B>
+<P>
+A LoadTestCase which tests the creation of random numbers.
+<P>
+<B><U>UrlLoadTest</U></B>
+<P>
+A LoadTestCase which tests the response time of a collection of URLs.
+<P>
+<B><U>LoadTestSuite</U></B>
+<P>
+The top-most test suite used to run all known load tests. It includes
+two example load test cases - ExampleLoadTest and UrlLoadTest. You won't
+want to run this as part of your defect testing suite, as it will defeat
+the purpose of rapid feedback. This is a candidate for the lunch hour test
+suite.
+<P>
+The following is an example LoadTestCase:
+<BLOCKQUOTE>
+<PRE>
+public class ExampleLoadTest extends LoadTestCase {
+	
+
+    /**
+     * Constructs an ExampleLoadTest with the specified name.
+     * 
+     * The test simulates 10 concurrent users ramping
+     * at 1 user per second with a maximum elapsed time
+     * of 2 minutes.
+     *
+     * @param name Test name.
+     */
+    public ExampleLoadTest(String name) {
+        super(name);
+        setMaxUsers(10);
+        setTimer(new ConstantTimer(1000));
+        setMaxElapsedTime(120000);
+    }
+
+    /**
+     * Sets up the test fixture.
+     */
+    protected void setUp() {
+        super.setUp();
+    }
+
+    /**
+     * Tears down the test fixture.
+     */
+    protected void tearDown() {
+        super.tearDown();
+    }
+
+    /**
+     * Assembles and returns a test suite for all
+     * the test methods of this class.
+     *
+     * All the load-related methods should be added here.
+     *
+     * @return A non-null test suite.
+     */
+    public static Test suite() {
+        TestSuite suite = new TestSuite();
+        suite.addTest(makeLoadTest(new ExampleLoadTest("testRandomGen")));
+        return suite;
+    }
+
+    /**
+     * Example load test.
+     */
+    public void testRandomGen() {
+        java.util.Random r = new java.util.Random();
+        for (int i=0; i &lt; 100000; i++) {
+            r.nextDouble();
+        }
+    }
+
+    /**
+     * Test main.
+     */
+    public static void main(String args[]) {
+        String[] testCaseName = {ExampleLoadTest.class.getName()};
+        //junit.textui.TestRunner.main(testCaseName);
+        //junit.swingui.TestRunner.main(testCaseName);
+        junit.ui.TestRunner.main(testCaseName);
+    }
+}
+</PRE>
+</BLOCKQUOTE>
+<br>
+
+
+<!--
+
+	Support	
+
+-->
+<P>
+<A name="support"></A> 
+<TABLE class="Primary" width="100%" border="0" cellspacing="0" cellpadding="0">
+	<TR><TD class="Border">&nbsp;</TD></TR>
+	<TR> 
+		<TD class="SubHeader">&nbsp;
+			Support	
+		</TD>
+	</TR>
+</TABLE>
+</P>
+<P>
+If you have any questions, comments, bug reports, or enhancement 
+requests regarding the JUnit Load Testing Extensions, please send them to
+<a href="mailto:mike@clarkware.com">mike@clarkware.com</a>.
+</P>
+<br>
+
+
+<!--
+
+	Resources
+
+-->
+<P>
+<A name="resources"></A> 
+<TABLE class="Primary" width="100%" border="0" cellspacing="0" cellpadding="0">
+	<TR><TD class="Border">&nbsp;</TD></TR>
+	<TR> 
+		<TD class="SubHeader">&nbsp;
+			Resources
+		</TD>
+	</TR>
+</TABLE>
+</P>
+<P>
+<UL>
+	
+	<LI>
+		<A href="http://www.clarkware.com/software/junitprimer_src.zip" 
+			target="_blank">Source Code</A> 
+	 	- The complete source code for the ShoppingCartTest example.
+
+	<LI>
+		<A href="http://www.junit.org/" target="_blank">
+			JUnit</A> 
+		- The Official Website
+
+	<LI>
+		<A href="http://www.junit.org/junit/doc/cookbook/cookbook.htm" 
+			target="_blank">JUnit Cookbook</A>
+		
+	<LI>
+		<A href="http://www.junit.org/junit/doc/testinfected/testing.htm" 
+			target="_blank">&quot;JUnit Test Infected: Programmers Love Writing Tests&quot;</A>
+	    by Gamma, E. and Beck, K. (Java Report)
+
+	<LI>
+		<A href="http://www.junit.org/junit/doc/cookstour/cookstour.htm" 
+			target="_blank">&quot;JUnit A Cook's Tour&quot;</A>
+	    by Gamma, E. and Beck, K. (Java Report)
+
+	<LI>
+		<A href="http://www.javaworld.com/javaworld/jw-05-2000/jw-0526-testinfect.html" target="_blank">&quot;Test infect your Enterprise JavaBeans,&quot;</A>
+	    by Michael T. Nygard and Tracie Karsjens (JavaWorld)
+
+	<LI>
+		<A href="http://www.clarkware.com/software/JDepend.html" 
+			target="_blank">JDepend</A>
+		- A Java package dependency analyzer with example JUnit test cases
+	
+	<LI><I>Design Patterns: Elements of Reusable Object-Oriented Software</I>,
+	       by Gamma, E., et al. (Addison-Wesley, 1995)
+
+	<LI><I>Refactoring: Improving The Design Of Existing Code</I>,
+	       by Fowler, M. (Addison-Wesley, 1999)
+
+	<LI><I>Extreme Programming Explained</I>,
+	       by Beck, K. (Addison-Wesley, 2000)
+
+</UL>
+</P>
+
+
+<!--
+
+	About The Author
+
+-->
+<HR>
+<P>
+<DIV align="center">
+<TABLE class="Primary" width="90%" cellspacing="0" cellpadding="1" border="0">
+	<TR>
+		<TD class="Primary">
+			<FONT class="Reverse">
+				<B>&nbsp;About the author</B>
+			</FONT>
+		</TD>
+	</TR>
+	<TR>
+		<TD class="Primary">
+			<TABLE class="Secondary" width="100%" cellspacing="0" cellpadding="3" border="0">
+				<TR>
+					<TD class="Secondary">
+              			<A href="mailto:mike@clarkware.com">Mike Clark</A> 
+              			is an independent consultant for
+              			<A href="http://www.clarkware.com" target="_blank">
+              			Clarkware Consulting, Inc.</A>,
+              			specializing in Java-based architecture, design, 
+						and development.
+					</TD>
+				</TR>
+			</TABLE>
+		</TD>
+	</TR>
+</TABLE>
+</DIV>
+</P>
+
+</BODY>
+</HTML>

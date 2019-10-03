@@ -1,0 +1,16 @@
+h2. The <groovy> tag
+
+Groovy scripts can be used in Ant instead of writing fully fledged custom Ant tasks.
+The groovy language syntax seems to be somewhat of a crazy mix between xml and python.
+
+To use a Groovy script, simply write code between <groovy> </groovy> tags.  There are a number of Ant environment objects available inside the script:
+|project|The current Ant project|
+|properties|A map of all available properties|
+
+A simple example is shown below:
+{code:xml}
+<groovy>
+      properties.put("username.lower", properties.get("username.upper").toLowerCase())
+</groovy>
+{code}
+

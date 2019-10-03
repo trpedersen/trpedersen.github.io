@@ -1,0 +1,120 @@
+h1. Issues
+
+
+h4. AbstractJiverPersistenceData (STILL OUTSTANDING)
+
+Insert for INF_INFRINGEMENT is using an existing PK ID (from the object itself).  Possibly an update 
+
+should be being called instead of insert?
+
+h4. Flush for plates fails
+
+Related to an entry for a plate 'CHOPPER' in the database.  Possibly in a corrupted state.
+I've removed this record from the database and now all seems to be ok.
+
+h4. No NEVDIS connection.
+
+Added a couple of settings to the local.cfg file to use the dummy test version of Nevdis.  Namely these 
+
+fields:
+server/junit=true
+nevdis/rigged/class=au.gov.act.jiver.external.nevdis.test.rigged.NevdisRiggedImpl
+nevdis/timeout=1000
+
+h4. Null Pointers (STILL OUTSTANDING)
+
+getPOKey() often returns null, resulting in NPEs.  I've seen the cause of this.  Some places the POKey 
+
+is explicitly set and others it's not.
+See the dodgy comment here (in CachePOBox.java):
+// TODO: fix a bug here - when
+// objects without allocated keys are added to the POBox,
+// there is a key clash (ie both objects have key of 0).
+// James Gifford, 8/12/2001
+
+if (key.getLongValue() == 0)
+\{             // This is not allowed. Used to be allowed, but would have been
+// buggy.
+/\* TODO release this code             throw new SystemException("Must allocate primary key on 
+
+PersistentData " +                     object.getData().getClass() + " before adding to POBox");        
+
+             \*/         }
+also happens under ParkingParcelTest.java for the same reason:
+regoData.setRegoId(new Long(rego.getPOKey().getLongValue())
+);
+
+*This seems to be PURELY code related.* Ie. it doesn't seem to stem from bad data or configuration.
+
+jiver.parcels.fee.CostFeeComponent.getFeeCodeId is a serial NPE offender.
+
+
+h4. The new location I've added doesn't have a 'Station'. (STILL OUTSTANDING)
+
+Seems that Dev Location is not a Government Inspection Station.  Easy enough to add one
+
+au.gov.act.jiver.util.ValidationException: Station not found for location: Developer Location
+at au.gov.act.jiver.managers.inspection.InspectionHelper.getStationId(InspectionHelper.java:66)
+at 
+
+au.gov.act.jiver.parcels.inspection.test.RecordInspectionFeeParcelTest.getStationKey(RecordInspectionFe
+
+eParcelTest.java:299)
+at 
+
+au.gov.act.jiver.parcels.inspection.test.RecordInspectionFeeParcelTest.testRecordRetestAtGovStation(Rec
+
+ordInspectionFeeParcelTest.java:65)
+
+h4. Get Auditor method fails (STILL OUTSTANDING)
+
+See TestStationFactory.java   TestExaminerFactory.getAuditor(getPOBox());
+Possibly related to config
+
+h4. Security for functions hasn't been defined in database.
+
+The 2 that I've found in the updates sql file I've now added to the database initialisation script.
+
+h4. Needed to add columns and modify columns
+
+These are the queries added to the build file:
+ALTER TABLE FIN_PAYMENT_TXN ADD TXN_SUPERVISOR VARCHAR2(1024);  \--The size of the field here is purely 
+
+a guess.
+ALTER TABLE FIN_DEBT_TXN MODIFY (DOUBTFUL NUMBER NULL);
+ALTER TABLE PRK_TYPE_LOCATION ADD TYPE_LOCATION_STATUS NUMBER NULL;
+
+h4. A number of tests fail
+
+These are test failures because the asserts are failing.  There doesn't seem to be any buried 
+
+exceptions here but I will investigate.
+A lot them seem to be: Financial transaction does not exist.  (This seems to be caused by the issue 
+
+titled "Offence location not set" below)
+
+h4. Unable to get AIG examiner
+
+This comment inspires me with confidence:
+     * We must have atleast one  AIG examiner pre-exisiting in the database.
+     * Because of the dependencies of examiner and station with each other, we
+     * are unable to create an auditor programatically and hence rely on database
+     * to supply us one.
+It's looking for a hard coded value of AIG39.  I've added this to the build script.
+
+h4. Offence location not set
+
+Results in NPEs.  See Infingement.java, provideTerritory()
+
+h4. testFindLatestPaymentItem returns null resulting in an NPE
+at assertEquals(itemPrice, paymentItem.getOriginalFee());
+
+h4. overpayRegistration has NPE on an assert line
+
+account.getAccountHistory().size()
+Which is rather stupid, as a null account is guarded against earlier (see code below), so obviously 
+
+it's expected it could be null.
+Money accountClosingBalance = account == null ? new Money(0.00D) : account.getBalance();
+
+It's the JUnitTester JUnitTester client that doesn't have an account.

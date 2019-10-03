@@ -1,0 +1,26 @@
+h2. RELEASE NOTES
+
+| Release: | <release name> |
+|Date:|{beanshell}
+Calendar c = Calendar.getInstance(); 	
+		c.set(2007,07,12);
+		Date d = c.getTime();
+		java.text.DateFormat dfus = java.text.DateFormat.getInstance();
+		out.println(dfus.format(d));
+{beanshell}
+
+| Released By: | David Newman |
+| Released To: | Dytech Internal Testing |
+| Released For: | Functional Testing |
+| Jira Version: | <release name>|
+| Build: | <release name>|
+| URL (web): | [http://<zonename>:8080/mrs/regoact] |
+| URL (swing client): | [http://<zonename>:8080/mrsclient/mrs.jnlp] | 
+
+
+{jiraissues:url=http://janus/jira/sr/jira.issueviews:searchrequest-xml/temp/SearchRequest.xml?&fixfor=12353&pid=10410&sorter/field=issuekey&sorter/order=DESC&os_username=rssuser&os_password=rss|columns=type;key;summary;status;resolution}
+
+
+
+
+

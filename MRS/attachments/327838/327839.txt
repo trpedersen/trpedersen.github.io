@@ -1,0 +1,29 @@
+* Change C:\devenv\servers\jboss-4.2.0\server\default\conf\jboss-service.xml
+** problem manifests itself by not being able to sign on with either the web site or GUI
+{code:xml}
+<attribute name="BindAddress">${jboss.bind.address}</attribute>
+{code}
+with
+{code:xml}
+<attribute name="BindAddress"></attribute>
+{code}
+
+\*Starting and stopping jboss
+
+h3. Eclipse
+
+From your deployment menu \-> JBoss 4.x \-> Configure
+Set optional program arguments to
+*\-b your_ip_address*
+Set optional shutdown arguments to
+*\--shutdown your_ip_address*
+
+h3. Solaris
+
+{note:title=unix} Further research has been done on this so it is probably better not to edit jboss-service.xml but to provide parameters on run.sh or bat and shutdown.sh or bat
+e.g for solaris
+su - jboss \-c "/opt/jboss/bin/run.sh \-Djboss.bind.address=0.0.0.0 \-b 192.168.107.15" &
+su - jboss \-c "/opt/jboss/bin/shutdown.sh \--shutdown \--server 192.168.107.15"
+where the IP is the IP of the zone
+With Windows for development the doco suggests that the IP could be replaced with a host name so your PC name could be used & should be resolved by DNS
+{note}

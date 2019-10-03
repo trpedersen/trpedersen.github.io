@@ -1,0 +1,112 @@
+Hudson is a fairly flexible continuous integration builder.
+There are many plugins available for it on its website [http://hudson.javaforge.com].
+The MRS installation is at [http://tmrd-build:8090/hudson/].
+
+h2. General Do's and Dont's
+
+* Do name the build according to convention. Don't change it.
+* Do put your email address in the notify box
+* Do make a new hudson job for each branch created. You make the branch, you set up the hudson job
+* Do provide the adaptation in the job description field
+* Do 'prepare for shutdown' hudson when playing with anything that could get in the way of a concurrently-executing builder
+* Do 'prepare for shutdown' hudson when the server is going to be shutdown
+* Don't delete builds
+* Don't stop builds before they are finished *particularly if they are still checking out source*
+* Don't change the settings without talking to either of the build managers.
+
+h2. Important Build Targets
+There are two build targets that are designed to be run from the integration build.  
+
+* *full-build*: Cleans, compiles, runs tests
+* *documentation-build*: Generates documentation 
+
+
+h2. Configuring a New Builder
+# From the main hudson page, select *New Job*
+# Name the job, its prefrable that you name it as the build version. (ie something like 'branch-<branchname>'
+# Choose *Copy existing job*
+# and type the name of the trunk builder (MRS-Trunk at time of writing)
+# Hit ok
+
+Your builder has now been created, and you can customise the options for it with the current screen
+* You can get back to this page by choosing selecting the job from the main page, and then clicking configure.
+
+# Skip straight to the repository field
+# Change the repository url to the one for your branch
+# Leave the _Local module directory_ blank.
+ This is a relative path specification as to where the source will be checked out into. 
+# If a red message is displayed between the boxes about a PROPFIND request failing; You will need to set up authentication for the branch
+## Click the enter credential link
+## Choose basic authentication
+## Enter *autobuild* for the username
+## Enter *autobuild* for the password
+## Use your browsers back button to return to the edit page
+# There should not be any red text after the svn repository field
+# Add a description to the job (top of the screen). Best practice is probably to copy&paste the adaptions to make into this field
+# Append your email address to the _email recipients_ field. (you will always receive build messages if you are on this list)
+# Make sure the _'dont send email for every broken build'_ box is checked
+# Amend the artifacts list with the locations of any distributables generated
+# Also amend the fingerprint field with the same information
+
+If you require documentation to be generated also for your branch
+# Create another hudson job
+# Name it <name>-Documentation
+# Copy the build settings from MRS-Trunk-Documentation
+# Change the svn path to your build
+# Make sure that your artifacts are specified 
+# Make sure no emails are sent
+# Make sure that jira issues are _not_ updated (otherwise you will see 'integrated in xxx-documentation' comments in jira- fairly useless)
+
+*Now* add any jobs you have made to the relevant views, ie Trunk or Branches
+Add code builders to the branches view
+Add documentation generators to documentation view
+Add trunk related stuff to trunk view
+
+To add something to a particular view,
+# Go to the desired view (ie click on the tab)
+# Click the edit view link on the menu at the left
+# Check the boxes for the jobs to show in this view
+
+h2. Hudson Error Messages
+h4. Svn checksum failed; expected=... got=null
+Classic access denied message. Hudson runs under the (local) user hudson.
+Run this from the command line on the server 
+{code:none}
+# chown tomcat:tomcat -R /data/hudson_home/
+{code}
+
+h2. Tips
+h3. Memory allocation
+*If your build needs more memory:
+{code:none}
+  -Xmx1024m -XX:MaxPermSize=256m
+{code}
+This will set the memory ceiling to a gig, and give the permanent generation size (ie used for reflection etc) to 256meg
+
+* On your local box set the environment variable ANT_OPTS to something like the above 
+*# Go to hudson -> (your project) -> configure
+*# Click the *advanced* button, and enter the above memory options in the box presented
+* Note that Calls to the ant macro _run-ant-build_ will spawn and have their *own* memory allocation (ie defaults). If you need to increase the memory for something that is called after this macro being used, check out the macros.xml file 
+
+h3. Temporarily stopping building
+If you are executing any targets that could affect the build process, you should consider halting the builds until you finish.
+* Things like
+** svn cleanups / folder trickery from /hudson_home/jobs/.../actrego
+** Database dropping/population for the building users
+# From hudson, go to Manage
+# Click the prepare shutdown link
+Builds will now not run, and the hudson configuration (should be) saved to disk
+# Do whatever youd like
+# When finished, go back to the manage page, and click the cancel shutdown link (where the shutdown link was)
+#* You can also cancel the shutdown by clicking the cancel link from the build queue.
+
+*If tomcat is going to go down, hit the shutdown link to be sure all the configuration survives.
+
+h2. Builders
+||Name||Trigger||Description||
+|MRS-Trunk|trunk commit|Main trunk build. Runs tests in local mode for speed|
+|MRS-Trunk-Documentation|trunk commit|Generates documentation about the trunk, stuff like javadoc etc.|
+|trunk-integration|7pm scheduled|Full blown trunk builder, runs every night, and runs tests in remote mode for test accuracy|
+|branch-clientScreens|branch commit||
+|branch-systenScreens|branch commit||
+

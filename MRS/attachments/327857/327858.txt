@@ -1,0 +1,17 @@
+In order to conduct a safe and fast branch switch:
+
+# Make sure that you take local copies of any uncommitted code that you know has not been included in a recent merge.
+# Close Eclipse, if it's open. This avoids file locking issues.
+# Navigate to your SVN directory in Windows Explorer, and locate the folder {{mrs/trunk}}
+# Right-click on the subfolder {{actrego}}, and choose the menu option {{TortoiseSVN->Switch...}}
+# Type in the URL of the branch you wish to switch to. In general, this will be under the {{branches}} subdirectory on the SVN repository. For example, {{svn://svn/mrs/branches/branch-reporting2/}}
+The target switch url _must_ be at the same level as the directory you're issuing the switch command.
+# Make sure the switch completes properly. Any errors _must_ be resolved before you can go any further.
+# Once the switch is done, right-click again on the {{actrego}} folder and choose the menu option {{Command Prompt}}
+# Type the command {{ant bootstrap}} and wait for it to complete.
+# Open Eclipse.
+# Select all your MRS projects at once, right-click on them, and choose the menu option {{Refresh}}
+# Once the rebuild is complete in Eclipse, right-click on the {{MRS}} project, and choose the menu option {{MyEclipse->Add and Remove Modules...}}
+Check to see that MRSEJB, MRSESB and MRSWeb modules are present.
+
+That should be it. Fire up JBoss and check that your deployment is good.

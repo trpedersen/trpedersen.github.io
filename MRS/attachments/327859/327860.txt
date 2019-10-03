@@ -1,0 +1,132 @@
+h2. JUnit Tests
+
+There are over 2000 thousand JUnit tests included in the MRS source base, which currently take roughly an hour to run.
+
+h3. Running the tests
+
+To run the full suite of JUnit tests (excludes CardGate tests)
+* open a command line window
+* change directory to MRSEJB (eg *cd C:\svn\mrs\trunk\actrego\MRSEJB*)
+* type *ant .run-tests* (to run both JUnit and Marathon tests type *ant test*)
+
+Or you may wish to run the tests from Eclipse:
+* Click Debug... (or Run...)
+* Highlight JUnit in the tree and click on the New button
+* Make sure project is MRSEJB and click on the Search button (will take a few minutes, but this is the land of Eclipse/Java so you are used to this :-))
+* Enter '*\*Suite*' in the textbox and select the appropriate test suite (Or leave test field blank and select '*BusinessArea*', which runs ALL tests)
+* Click Apply and then click Debug/Run
+
+h2. GUI Tests
+
+Marathon is the application that will create and run tests cases for Swing GUI applications.
+
+h3. Running all of the tests (with eclipse)
+
+* Browse to the eclipse package in the package explorer (MRSEJB \-> src \-> au.gov.act.jiver.test.eclipse)
+* Right click on RunAllMarathonTest.java and Run As \-> Run...
+* Click on new application button
+* Click on Arguments
+* Add the following line to VM arguments to specify the path to your actrego configuration directory (Note: the path may be different on your machine)
+** \-Denvironment.properties="C:\svn\mrs\trunk\actrego\configuration"
+* Click run
+
+h3. Running a selection of the tests (with eclipse)
+
+* Browse to the eclipse package in the package explorer (MRSEJB \-> src \-> au.gov.act.jiver.test.eclipse)
+* Right click on RunSelectionMarathonTest.java and Run As \-> Run...
+* Click on new application button
+* Click on Arguments
+* Add the following line to VM arguments to specify the path to your actrego configuration directory (Note: the path may be different on your machine)
+** \-Denvironment.properties="C:\svn\mrs\trunk\actrego\configuration"
+* Click run
+* A list of tests will be displayed. Select the tests you want to run (hold down ctrl or shift and click on the tests)
+* Click Run Selected Tests
+
+h3. Running the tests (from command line)
+
+To run the full suite of Marathon tests
+* open a command line window
+* change directory to MRSEJB (eg *cd C:\svn\mrs\trunk\actrego\MRSEJB*)
+* type *ant .marathon-tests* (to run both JUnit and Marathon tests type *ant test*)
+
+h3. Adding a new GUI test
+
+The best way to create Marathon test cases is to use the Marathon GUI\!  Open Marathon (*/tools/marathon/marathon.bat*) and then open the MRSEJB test suite (*/MRSEJB/test/marathon*) from the Marathon launch window.
+
+h2. Web Tests
+
+Canoo is the application used to test the regoact web pages.
+
+h3. Running all of the tests (from eclipse)
+
+* Browse to the eclipse package in the package explorer (MRSWeb \-> src \-> au.gov.act.jiver.test.eclipse)
+* Right click on RunAllWebtests.java and Run As \-> Run...
+* Click on new application button
+* Click on Arguments
+* Add the following line to VM arguments to specify the path to your actrego configuration directory (Note: the path may be different on your machine)
+** \-Denvironment.properties="C:\svn\mrs\trunk\actrego\configuration"
+* Click run
+
+h3. Running a selection of tests (from eclipse)
+
+* Browse to the eclipse package in the package explorer (MRSWeb \-> src \-> au.gov.act.jiver.test.eclipse)
+* Right click on RunAllWebtestsWithUI.java and Run As \-> Run...
+* Click on new application button
+* Click on Arguments
+* Add the following line to VM arguments to specify the path to your actrego configuration directory (Note: the path may be different on your machine)
+** \-Denvironment.properties="C:\svn\mrs\trunk\actrego\configuration"
+* Click run
+
+h3. Running the tests (from command line)
+
+To run the Canoo web tests, change the current directory to */MRSWeb* and run '*ant test*' on the command line.
+This will run the build script under the subdirectory */test* which contains a list of Canoo scripts to run.
+
+*Make sure you have the application deployed on JBoss and the JBoss server is started before you run the tests\!*
+
+h3. Adding a new webtest
+
+Add a new xml file under one of the subdirectories: navigation, functional or sanity.  Use the xml below as a template:
+{code:xml}
+<?xml version="1.0" encoding="UTF-8"?>  <\!DOCTYPE project SYSTEM "../MyWebTest.dtd">   <project name="Sanity" basedir="." default="%TARGET%">    <property name="webtest.home" location=".." />    <import file="${webtest.home}/lib/taskdef.xml"/>      <target name="%TARGET%">      <webtest name="%TARGET%">        &config;        <steps>          &login;       %CUSTOM%          &logoff;        </steps>      </webtest>    </target>  </project>
+{code}
+* Name your xml file to something appropriate (eg login.xml)
+* Name your %TARGET% using the following convention: test area-test name (eg. *sanity-login*)
+* Place your custom steps where %CUSTOM% is placed in the above template.
+
+The *&config;*, *&login;* and *&logoff;* are custom macros to save writing the same steps over for every webtest.  See the section *Adding a new webtest macro* below for more information.
+
+To enable your test to be run, you will need to add it to the *build.xml* file in the */MRSWeb/test* directory.
+
+First, you need to import the new test.
+{code:xml}
+<import file="${MRSWeb.dir}/test/sanity/login.xml"/>
+{code}
+Then you will need to add it to the appropriate target (sanity, functional or navigation)
+{code:xml}
+<target name="sanity" depends="clean,init">              <\!-\\\\\- this is the newly inserted test case-->             <antcall target="sanity-login"/>             <test-style resultPath="${sanity.resultpath}/sanity-login"/>             <\!-\\\\\- end here \-->              <fail if="${webtest.failure}" message="Failure in sanity webtests, please see ${sanity.resultpath}/results.html" />       </target>
+{code}
+
+h3. Adding a new webtest macro
+
+There are two types of macros, single step and multi step macros.
+
+A single step macro is just an Ant macrodef and can be used directly in web tests.  You may want to define a single step macro to wrap a built in Canoo task for example.  Single step macros are defined in the */MRSWeb/test/include/step-macros.xml* file.  There is an example macro in this file, use it as a guide when you are creating your own.
+
+Multi step macros are used to define a certain order of steps that will be used in one or more tests.  For example, every test will require entering a username, password and clicking on the login button before anything else can happen.  These steps can be put into a multi step macro.
+All multi step macros reside in the */MRSWeb/test/include/entities* directory and have their own separate xml file.  (Eg login.xml, not to be confused with the webtest login.xml)
+The login example is shown below
+{code:xml}
+&clearCookies;      <invoke          description="Go to the login page"          url="/"      />      <setInputField          description = "Set the username"          xpath="//input\[ends-with(@name, '${mrs.field.login.username}')\]"          value="${mrs.value.login.username}"          />      <setInputField          description = "Set the password"          xpath="//input\[ends-with(@name, '${mrs.field.login.password}')\]"          value="${mrs.value.login.password}"      />      <clickButton          description="Press the 'I Accept' button"          label="I Accept"      />      <verifyText          description="Should get welcome screen text"          text="${mrs.text.welcome}" />
+{code}
+Note that this macro includes another macro *&clearCookies;*.
+The script also contains Ant property references like *$\{mrs.value.login.username\}*.  Please use these instead of hard coded text where appropriate.  All properties you define for webtests should be defined in */MRSWeb/test/include/webtest-vars.xml*
+
+Make sure that all steps you write, whether they be in macros or webtests, have a description attribute.  This will appear when running the tests and also in the test result reports.
+
+Your multi step macro now needs to be given an alias in */MRSWeb/test/include/Project.dtd*.  For the login example this is the line added:
+{code:xml}
+<\!ENTITY login SYSTEM "entities/login.xml">
+{code}
+It can now be referred to in other macros and webtests as simply *&login;*
+

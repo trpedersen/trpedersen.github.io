@@ -1,0 +1,75 @@
+This section describes how to merge a branch back to the trunk.
+
+{warning:title=Warning}
+This documentation is out of date and is misleading. We are no longer using the svnmerge.py script or svnmerge.exe.
+
+Instead use 'svn merge' the svn command itself, or see [Merge Instructions].
+
+This is much easier to use and 'just' works. For example, if you have a branch checked out and would like to merge the latest version of GO-LIVE back on to branch then you can use a command like this:
+
+svn merge svn://svn.appsdev.uxc.com.au/mrs/branches/branch-R10-GOLIVE
+{warning}
+
+The branches and trunk should be setup for merging via the branch scripts (actrego/tools/branch) as described in [Branch howto].
+
+h2. Pre-requisites
+You will need svnmerge.py on your PATH. There is a copy in tools/branch/
+Python installed, see tools/branch for the install
+
+h2. Notes
+This guide is based on the official guide at [http://www.orcaware.com/svn/wiki/Svnmerge.py].
+All the merging is done on your working copy, so you can revert it and start over.
+Don't forget to checkin the top level directory (as it has its svn properties changed) when committing the merge
+You can block merges from occurring by using the -block (revision/list) argument
+You can specify groups of revisions to merge/block by using the rNNN-rMMM notation
+You can specify groups of revisions by comma separating them (no spaces). You can put in single revisions too, ie
+{code:none}r20-r30,r40,r50-
+Will specify 20 through 30, 40, and 50 to HEAD to work with{code}
+
+Please include the svn-commit-message.txt in your commit message, for traceability purposes.
+
+
+h2. To Merge From Trunk to a Branch
+
+{code:none}
+cd branches/(branch)
+svnmerge.py merge (revisionlist) -S svn://svn/mrs/trunk/actrego
+{code}
+revisionlist is optional here
+Then work though changes on your working copy, and commit as described below (*not* using tortoise!)
+
+h2. To Merge From a Branch to Trunk
+{code:none}
+cd trunk/actrego
+svnmerge.py merge (revisionlist) -S svn://svn/mrs/branches/(branch)
+{code}
+revisionlist is optional here
+Then work though changes on your working copy, and commit as described below (*not* using tortoise!)
+
+Please use the following checklist when merging
+* Prefrably dont merge the build infastructure back to trunk. This of course depends on the branch contents, but be careful when doing these.
+* Dont take changes to configuration/build.version
+* Try not to take database changes (ie to baseScenario/62full) ask people questions if there are changes to these files. DO take the upgrade scripts. Do manually merge any ref_version.sql files- be sure to keep the right branch.major.minor for the target branch
+* Be wary of changes to any of the environments in /configuration.  Make sure that all the environments have the same properties defined (but whose contents vary as required)
+* Verify that all compiles in eclipse (_and_ using the ant bootstrap)
+* Run unit tests of areas concerned with the branch (or all if you have time)
+* Collect all the open issues against the branch and change them to the appropriate trunk release
+* # New jira search, MRS, resolution=unresolved, fix for=(whatever branch you are killing off)
+* # Choose bulk change
+* # Choose edit, and change only the fix for version to the next trunk release
+* # and you are done
+
+h2. CAUTION:
+Be careful if you experience an svn conflict at the root directory (at .). DO NOT just resolve this but address the conflict. In this state if the conflict is just resolved it is likely that the resultant svn properties will not contain merge information for some branches.
+It is essential that an {code}svn diff .{code} is run and the pre and post situations examined to see whether there is any deletion of prior information occurring. One situation possible is that pre & post changes need to be concatenated. 
+
+h2. Committing your merge
+Please DO NOT USE tortoise to commit the the merge. You need the commit message to include all the commit details, which are stored in svnmerge-commit-message.txt.
+Edit the svnmerge-commit-message.txt and put your jira issue and comments in front of the first line
+{code}
+cd target
+svn ci -F svnmerge-commit-message.txt 
+{code}
+
+h2. JIRA Issues
+After a merge from a branch to trunk it is important to transfer any open, unresolved/reopened or in progress JIRA issues from the unreleased version of the branch to the trunk. Normally when a branch or trunk is released the non-fixed/closed issues are pushed to the next intended release. If this does not occur and a merge happens in the interim, the risk is that issues will be lost.

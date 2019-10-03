@@ -1,0 +1,8 @@
+IMB has requested that the file jboss-log4j.xml not be included in any package delivered to them. They have specially configured the file for their environments and so do not want have it overwritten by the installation of new packages. Changes to this file by UXC Applications Development, as a consequence of changing development requirements, will need to be communicated via the Operations Manual.
+h3. Implementation
+As all internal builds at UXC still require this file to be deployed, a property is used to determine whether the file is to be included in the package or not.
+* To *NOT deploy* jboss-log4j.xml to any package insert the following into the local.properties file for the environment being built
+{code} deploy-jboss-log4j=false {code}
+The value of the property does not matter; existence is all that is checked. 
+* To *deploy* jboss-log4j.xml to any package do not insert the property into the local.properties file for the environment being built.
+* all environments for IMB (svn://svn/mrs/branches/branch-R10-GOLIVE/quimby*) currently have this property set so future branches will have these changes propogated.

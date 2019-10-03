@@ -1,0 +1,69 @@
+<HTML>
+<HEAD>
+<TITLE>Unit Testing</TITLE>
+</HEAD>
+
+<BODY>
+
+<h1>Unit Testing Guidelines - TRIPS replacement</h1>
+<UL>
+<LI>The developer who writes the class is responsible for making sure a corresponding test class gets written.
+Ideally, another developer should write the test class and try to 'break' the methods.</LI>
+<LI>Each package to have a sub-package called tests which contains all the testing classes.</LI>
+<LI>There is a class called TestAll which runs all the tests for the package.</LI>
+<LI>Tests should be incorporated into the build process, so any modifications made are tested automatically. (put into ant build.xml script)</LI>
+</UL>
+
+<h2>JUnit</h2>
+<UL>
+<li>Java Utility classes to make unit testing easy to implement.<li>
+<LI>Allows a test class to be written, which implements the TestCase class of Junit.</LI>
+<LI>Methods to override:
+<DIR>
+Override setUp() to initalize the test variables.<br>
+Override setDown() to release any permanent resource you allocated in setUp()
+</DIR>
+</li> 
+<LI>test methods use start with "test" to be recognized by JUnit.</li>
+<LI>each test method should be a single test case.</li>
+<LI>each test method must end in an assert method being called. This simply tests your assertion in the test case
+and if fails, will provide the nessasary feedback to JUnit. There are a few basic types:
+<dir>
+assert(boolean)<br>
+assertEquals()<br>
+assertNull()<br>
+assertNotNull()<br>
+assertSame()<br>
+</dir>
+the assertEquals method can handle all primitive types, check the api
+</LI>
+<LI>more details info on Junit, read the <a href="JUnitPrimer.html">primer</a><br>
+This explains how a test suite can be made, which should be a packages TestAll class
+</LI>
+<LI>Follow the <a href="test-template.java">template</a> given, and check the api for more info.</LI>
+<LI>Tests are run by two ways:
+<DIR>
+java junit.textui.TestRunner &lt;test-class&gt;<br>
+java junit.swingui.TestRunner &lt;test-class&gt;
+</DIR>
+</LI>
+</UL>
+
+<h2>EJB</h2>
+<UL>
+<LI>Test individual entity beans first to ensure a functional data layer</LI>
+<LI>Then test business logic tier of session beans</LI>
+<LI>Get the home interface of the ejb in the setUp method.</LI>
+<LI>Create a method which returns a new instance of the ejb for each test</LI>
+<LI>See the <a href="TelephoneNumberTests.java">example.</A></LI>
+</UL>
+
+<h2>More Info</h2>
+<ul>
+
+<li><a href="http://developer.java.sun.com/developer/technicalArticles/J2EE/testinfect/">Testing EJB</a> (Sun link)</li>
+<li><a href="http://www.junit.org">Junit homepage</a></li>
+</ul>
+
+</BODY>
+</HTML>
